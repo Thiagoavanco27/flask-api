@@ -61,6 +61,29 @@ def update_user(user_id):
     # Se o usuário com o ID especificado não for encontrado, retorna um erro 404
     return jsonify({"error": "Usuário não encontrado"}), 404
 
+@app.route("/users/<int:user_id>", methods=["PATCH"])
+def update_user_partial(user_id):
+    # Recebe os dados JSON da requisição
+    data = request.json
+    
+    # Percorre a lista de usuários
+    for usuario in usuarios:
+        # Verifica se o ID do usuário corresponde ao ID fornecido na URL
+        if usuario["id"] == user_id:
+            # Atualiza apenas os campos presentes no JSON da requisição
+            for key, value in data.items():
+                # Verifica se o campo existe no usuário e atualiza apenas se estiver presente no JSON
+                if key in usuario:
+                    usuario[key] = value
+                else:
+                    # Se o campo não for encontrado no usuário, retorna uma mensagem de erro
+                    return jsonify({"error": f"Campo '{key}' não encontrado"}), 400
+            # Retorna uma resposta de sucesso
+            return jsonify({"message": "Usuário atualizado com sucesso!"}), 200
+    
+    # Se o usuário com o ID especificado não for encontrado, retorna um erro 404
+    return jsonify({"error": "Usuário não encontrado"}), 404
+
 @app.route("/users/<int:user_id>", methods=["DELETE"])
 def delete_user(user_id):
     #deleta um usuario
